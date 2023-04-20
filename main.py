@@ -4,6 +4,7 @@ from mail_control import send_mail
 from main_w import Ui_mainWindow
 from table_data import load_data
 import pandas as pd
+from PySide6.QtGui import Qt, QKeySequence
 
 class MainWindow(QMainWindow, Ui_mainWindow):
     def __init__(self, *args, obj=None, **kwargs):
@@ -147,6 +148,45 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
         return
 
+    def keyPressEvent(self, event):
+        if event.matches(QKeySequence.Copy):
+            self.copy()
+        elif event.matches(QKeySequence.Paste):
+            self.paste()
+        else:
+            super().keyPressEvent(event)
+
+    def copy(self):
+        # 현재 선택한 셀의 값을 가져와서 클립보드에 복사합니다.
+        selected = self.list_table.selectedRanges()[0]
+        text = ''
+        for i in range(selected.topRow(), selected.bottomRow() + 1):
+            for j in range(selected.leftColumn(), selected.rightColumn() + 1):
+                text += str(self.list_table.item(i, j).text()) + '\t'
+            text = text[:-1] + '\n'
+        QApplication.clipboard().setText(text)
+
+    def paste(self):
+        # 클립보드에서 텍스트를 가져옵니다.
+        clipboard = QApplication.clipboard()
+        text = clipboard.text().rstrip('\n')
+        print(text)
+        # 텍스트를 탭으로 분리합니다.
+        rows = text.split('\n')
+
+        for i, row in enumerate(rows):
+            cols = row.split('\t')
+
+            # 행 추가
+            self.list_table.insertRow(self.list_table.rowCount())
+
+            # 열 추가
+            for j, col in enumerate(cols):
+                item = QTableWidgetItem(col)
+                self.list_table.setItem(i, j, item)
+                self.list_table.setItem(self.list_table.rowCount() - 1, j, QTableWidgetItem(col))
+
+        return
 
 
 app = QApplication()
