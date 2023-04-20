@@ -298,7 +298,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
       <x>610</x>
       <y>100</y>
       <width>460</width>
-      <height>521</height>
+      <height>471</height>
      </rect>
     </property>
     <property name="font">
@@ -341,8 +341,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QPushButton" name="delete_btn">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>640</y>
+      <x>680</x>
+      <y>580</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -355,7 +355,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <property name="geometry">
      <rect>
       <x>850</x>
-      <y>640</y>
+      <y>580</y>
       <width>121</width>
       <height>41</height>
      </rect>
