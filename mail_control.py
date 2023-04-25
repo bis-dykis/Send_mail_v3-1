@@ -49,7 +49,7 @@ def send_mail(mail_id, mail_pass, name, email, attach_url, subject, body):
             smtp_nmail.send_message(msg)
             send_status = "성공"
         except Exception as e:
-            print('이메일 발송에 실패했습니다. 오류 메시지:', str(e))
+            print('이메일 발송에 실패 했습니다. 오류 메시지:', str(e))
             send_status = "실패"
         finally:
             smtp_nmail.quit()

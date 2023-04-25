@@ -4,7 +4,8 @@ from mail_control import send_mail
 from main_w import Ui_mainWindow
 from table_data import load_data
 import pandas as pd
-from PySide6.QtGui import Qt, QKeySequence
+from PySide6.QtGui import QKeySequence
+
 
 class MainWindow(QMainWindow, Ui_mainWindow):
     def __init__(self, *args, obj=None, **kwargs):
@@ -17,6 +18,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.add_btn.clicked.connect(self.add_items)
         self.list_edit.setReadOnly(True)
         self.attach_edit.setReadOnly(True)
+        self.list_table.setColumnWidth(1, 200)
         return
 
     def openurl(self):
@@ -62,53 +64,28 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
                 table = self.list_table
 
-                selected_row = table.currentRow()
+                # selected_row = table.currentRow()
 
                 for row in range(table.rowCount()):
                     name = table.item(row, 0).text()
-                    email= table.item(row, 1).text()
+                    email = table.item(row, 1).text()
                     print(name, email)
-                    #table.setItem(row, 3, QTableWidgetItem("전송중"))
+                    table.setItem(row, 2, QTableWidgetItem("전송중"))
                     send_status = send_mail(mail_id, mail_pass, name, email, attach_url, subject, body)
                     table.setItem(row, 2, QTableWidgetItem(send_status))
 
                     if name is None:
                         break
 
-                    # if item is not None:
-                    #    data = item.text()
-
-
-                # 이전소스
-                # xlsx = load_workbook(list_name, read_only=True)
-                # sheet = xlsx["리스트"]
-
-                #for row in sheet.iter_rows(min_row=2):
-                #    name = row[0].value
-                #    email = row[1].value
-
-                #    if name is None:
-                #        break
-
-                #    send_mail(mail_id, mail_pass, name, email, attach_url, subject, body)
-
                 self.send_btn.setText("완료")
                 QMessageBox.information(self, 'Notice', '전송 완료')
                 self.send_btn.setDisabled(False)
                 self.send_btn.setText("메일 전송")
-                self.list_edit.setText("")
-                self.attach_edit.setText("")
+                
+                # 계속 해서 보낼 수 있도록 주석 처리
+                # self.list_edit.setText("")
+                # self.attach_edit.setText("")
 
-        return
-
-    def xl_open(self):
-        url_sel1 = QFileDialog.getExistingDirectory(self, 'Select Directory')
-        self.xlurl_edit.setText(url_sel1)
-        return
-
-    def pdf_save(self):
-        url_sel2 = QFileDialog.getExistingDirectory(self, 'Select Directory')
-        self.pdfurl_edit.setText(url_sel2)
         return
 
     def msg_complete(self):
@@ -143,8 +120,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
     def add_items(self):
         table = self.list_table
-        rowPosition = table.rowCount()
-        table.insertRow(rowPosition)
+        rowposition = table.rowCount()
+        table.insertRow(rowposition)
 
         return
 
@@ -192,4 +169,4 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 app = QApplication()
 window = MainWindow()
 window.show()
-app.exec_()
+app.exec()
