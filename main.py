@@ -3,8 +3,10 @@ from openpyxl import load_workbook
 from mail_control import send_mail
 from main_w import Ui_mainWindow
 from table_data import load_data
+from dataframe import table_data
 import pandas as pd
 from PySide6.QtGui import QKeySequence
+import datetime
 
 
 class MainWindow(QMainWindow, Ui_mainWindow):
@@ -78,6 +80,12 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                         break
 
                 self.send_btn.setText("완료")
+                df2 = pd.DataFrame()
+                df2 = table_data(df2, self)
+                print(df2)
+                now = datetime.datetime.now()
+                filename = now.strftime("%Y-%m-%d_%H-%M-%S")
+                df2.to_json(f'./result-{filename}.json', orient='records', force_ascii=False)
                 QMessageBox.information(self, 'Notice', '전송 완료')
                 self.send_btn.setDisabled(False)
                 self.send_btn.setText("메일 전송")
@@ -165,8 +173,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
         return
 
-
-app = QApplication()
-window = MainWindow()
-window.show()
-app.exec()
+if __name__ == "__main__":
+    app = QApplication()
+    window = MainWindow()
+    window.show()
+    app.exec()
