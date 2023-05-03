@@ -4,7 +4,22 @@ import glob
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+from PySide6.QtWidgets import QMessageBox
 
+
+def check_email(mail_id, mail_pass):
+    try:
+        smtp_nmail = smtplib.SMTP_SSL('smtp.naver.com', 465)
+        smtp_nmail.ehlo()
+        smtp_nmail.login(mail_id, mail_pass)
+        smtp_nmail.quit()
+        return True
+    except smtplib.SMTPAuthenticationError:
+        return False
+    except smtplib.SMTPRecipientsRefused:
+        return False
+    except smtplib.SMTPException:
+        return False
 
 def send_mail(mail_id, mail_pass, name, email, attach_url, subject, body):
     try:
@@ -16,13 +31,17 @@ def send_mail(mail_id, mail_pass, name, email, attach_url, subject, body):
         smtp_nmail.login(mail_id, mail_pass)
 
     except smtplib.SMTPRecipientsRefused:
+        QMessageBox.information(self, 'Notice', '로그인 에러 - 잘 못된 아이디 패스워드')
         print('로그인 에러 - 잘 못된 아이디 패스워드')
+        raise
 
     except smtplib.SMTPAuthenticationError:
         print('로그인 에러')
+        raise
 
     except smtplib.SMTPException:
         print('에러')
+        raise
 
     msg = MIMEMultipart('mixed')
     msg['Subject'] = subject
@@ -33,10 +52,11 @@ def send_mail(mail_id, mail_pass, name, email, attach_url, subject, body):
     msg.attach(mail_body)
 
     pdf_list = glob.glob(attach_url + "/*" + name + "*.pdf")
-    print(pdf_list)
+
     for file_path in pdf_list:
         with open(file_path, "rb") as f:
-            attach = MIMEApplication(f.read())
+            # 20230503 MIME Type 추가
+            attach = MIMEApplication(f.read(), _subtype='pdf')
             attach.add_header('Content-Disposition', 'attachment', filename=os.path.split(file_path)[1])
             print(os.path.split(file_path)[1] + " : 첨부")
             msg.attach(attach)

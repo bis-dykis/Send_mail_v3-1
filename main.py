@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem
 from openpyxl import load_workbook
-from mail_control import send_mail
+from mail_control import send_mail, check_email
 from main_w import Ui_mainWindow
 from table_data import load_data
 from dataframe import table_data
@@ -61,38 +61,41 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             if '리스트' not in xlsx.sheetnames:
                 QMessageBox.information(self, 'Notice', '엑셀 파일에 리스트 시트가 없습니다.')
             else:
-                self.send_btn.setText("전송중")
-                self.send_btn.setDisabled(True)
+                if check_email(mail_id, mail_pass):
+                    self.send_btn.setText("전송중")
+                    self.send_btn.setDisabled(True)
 
-                table = self.list_table
+                    table = self.list_table
 
-                # selected_row = table.currentRow()
+                    # selected_row = table.currentRow()
 
-                for row in range(table.rowCount()):
-                    name = table.item(row, 0).text()
-                    email = table.item(row, 1).text()
-                    print(name, email)
-                    table.setItem(row, 2, QTableWidgetItem("전송중"))
-                    send_status = send_mail(mail_id, mail_pass, name, email, attach_url, subject, body)
-                    table.setItem(row, 2, QTableWidgetItem(send_status))
+                    for row in range(table.rowCount()):
+                        name = table.item(row, 0).text()
+                        email = table.item(row, 1).text()
+                        table.setItem(row, 2, QTableWidgetItem("전송중"))
+                        send_status = send_mail(mail_id, mail_pass, name, email, attach_url, subject, body)
+                        table.setItem(row, 2, QTableWidgetItem(send_status))
 
-                    if name is None:
-                        break
+                        if name is None:
+                            break
 
-                self.send_btn.setText("완료")
-                df2 = pd.DataFrame()
-                df2 = table_data(df2, self)
-                print(df2)
-                now = datetime.datetime.now()
-                filename = now.strftime("%Y-%m-%d_%H-%M-%S")
-                df2.to_json(f'./result-{filename}.json', orient='records', force_ascii=False)
-                QMessageBox.information(self, 'Notice', '전송 완료')
-                self.send_btn.setDisabled(False)
-                self.send_btn.setText("메일 전송")
-                
-                # 계속 해서 보낼 수 있도록 주석 처리
-                # self.list_edit.setText("")
-                # self.attach_edit.setText("")
+                    self.send_btn.setText("완료")
+                    df2 = pd.DataFrame()
+                    df2 = table_data(df2, self)
+                    print(df2)
+                    now = datetime.datetime.now()
+                    filename = now.strftime("%Y-%m-%d_%H-%M-%S")
+                    df2.to_json(f'./result-{filename}.json', orient='records', force_ascii=False)
+                    QMessageBox.information(self, 'Notice', '전송 완료')
+                    self.send_btn.setDisabled(False)
+                    self.send_btn.setText("메일 전송")
+
+                    # 계속 해서 보낼 수 있도록 주석 처리
+                    # self.list_edit.setText("")
+                    # self.attach_edit.setText("")
+
+                else:
+                    QMessageBox.information(self, 'Notice', '로그인 에러')
 
         return
 
