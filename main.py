@@ -61,7 +61,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             if '리스트' not in xlsx.sheetnames:
                 QMessageBox.information(self, 'Notice', '엑셀 파일에 리스트 시트가 없습니다.')
             else:
-                if check_email(mail_id, mail_pass):
+                if check_email(mail_id, mail_pass, self):
                     self.send_btn.setText("전송중")
                     self.send_btn.setDisabled(True)
 
@@ -95,20 +95,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                     # self.attach_edit.setText("")
 
                 else:
-                    QMessageBox.information(self, 'Notice', '로그인 에러')
+                    #QMessageBox.information(self, 'Notice', '로그인 에러')
+                    print('로그인 에러')
+                    self.pass_edit.setFocus()
 
-        return
-
-    def msg_complete(self):
-        QMessageBox.information(self, 'Notice', 'EXECL TO PDF 변환 완료')
-        return
-
-    def msg_error1(self):
-        QMessageBox.information(self, 'Notice', 'EXECL 오류')
-        return
-
-    def msg_error2(self):
-        QMessageBox.information(self, 'Notice', 'PDF 오류')
         return
 
     def delete_items(self):

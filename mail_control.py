@@ -7,7 +7,7 @@ from email.mime.application import MIMEApplication
 from PySide6.QtWidgets import QMessageBox
 
 
-def check_email(mail_id, mail_pass):
+def check_email(mail_id, mail_pass, self):
     try:
         smtp_nmail = smtplib.SMTP_SSL('smtp.naver.com', 465)
         smtp_nmail.ehlo()
@@ -15,23 +15,26 @@ def check_email(mail_id, mail_pass):
         smtp_nmail.quit()
         return True
     except smtplib.SMTPAuthenticationError:
+        QMessageBox.information(self, 'Notice', '로그인 에러')
         return False
     except smtplib.SMTPRecipientsRefused:
+        QMessageBox.information(self, 'Notice', '로그인 에러 - 잘 못된 아이디 패스워드')
         return False
     except smtplib.SMTPException:
+        QMessageBox.information(self, 'Notice', '에러')
         return False
+
 
 def send_mail(mail_id, mail_pass, name, email, attach_url, subject, body):
     try:
         # 네이버
-        smtp_nmail = smtplib.SMTP_SSL('smtp.naver.com', 465) #tls 부분 주석 처리 필요
+        smtp_nmail = smtplib.SMTP_SSL('smtp.naver.com', 465)
         #smtp_nmail = smtplib.SMTP_SSL('smtp.gmail.com', 587)
         smtp_nmail.ehlo()
-        #smtp_nmail.starttls
+        smtp_nmail.starttls
         smtp_nmail.login(mail_id, mail_pass)
 
     except smtplib.SMTPRecipientsRefused:
-        QMessageBox.information(self, 'Notice', '로그인 에러 - 잘 못된 아이디 패스워드')
         print('로그인 에러 - 잘 못된 아이디 패스워드')
         raise
 
